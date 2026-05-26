@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>History · AutoValue AI</title>
+    <link rel="stylesheet" href="/static/style.css?v=3">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div class="page-shell">
+        <header class="topbar glass-card">
+            <div class="brand-group">
+                <div class="brand-mark">AV</div>
+                <div>
+                    <p class="brand-name">AutoValue AI</p>
+                    <p class="brand-tagline">History</p>
+                </div>
+            </div>
+            <div>
+                <a href="/" class="ghost-button">Home</a>
+                <a href="/predict-ui" class="ghost-button">Predict</a>
+            </div>
+        </header>
+
+        <section class="analytics-section">
+            <div class="analytics-grid">
+                <div class="analytics-card glass-card">
+                    <div class="analytics-heading">
+                        <div>
+                            <p class="section-label">Price trend</p>
+                            <h2>Prediction history</h2>
+                        </div>
+                        <div class="analytics-actions">
+                            <button id="expandChart" class="ghost-button">Expand</button>
+                            <button id="clearHistory" class="ghost-button">Clear</button>
+                        </div>
+                    </div>
+                    <div id="chartCount" class="history-summary">Saved predictions: <strong>0</strong></div>
+                    <div id="chartContainer" class="chart-container">
+                        <canvas id="historyChart" height="220"></canvas>
+                    </div>
+                </div>
+
+                <div class="analytics-card glass-card history-panel">
+                    <div class="analytics-heading">
+                        <div>
+                            <p class="section-label">Saved results</p>
+                            <h2>Recent predictions</h2>
+                        </div>
+                    </div>
+                    <div id="historyList" class="history-list">
+                        <div class="empty-state">
+                            <p>No saved predictions yet.</p>
+                            <span>Make your first prediction to see history here.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer glass-card">
+            <p>FastAPI backend · Joblib model loading · Responsive UX with Chart.js · Local history storage.</p>
+        </footer>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+
+</html>

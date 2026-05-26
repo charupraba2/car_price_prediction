@@ -1,0 +1,15 @@
+# DockerHub deployment information
+# 
+# To push to DockerHub, follow these steps:
+#
+# 1. Tag your image:
+#    docker tag car_price_prediction:latest YOUR_DOCKERHUB_USERNAME/car_price_prediction:latest
+#
+# 2. Login to DockerHub:
+#    docker login
+#
+# 3. Push the image:
+#    docker push YOUR_DOCKERHUB_USERNAME/car_price_prediction:latest
+#
+# 4. Pull and run from any machine:
+#    docker run -p 8000:8000 YOUR_DOCKERHUB_USERNAME/car_price_prediction:latest
