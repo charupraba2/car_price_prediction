@@ -151,6 +151,11 @@ async def history_ui(request: Request):
     return templates.TemplateResponse(request, "history.html", {})
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 @app.post("/api/predict")
 async def predict(payload: PredictionPayload):
     try:
