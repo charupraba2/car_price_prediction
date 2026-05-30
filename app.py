@@ -3,6 +3,7 @@ from pathlib import Path
 
 import joblib
 import numpy as np
+import pandas as pd
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, JSONResponse
@@ -45,6 +46,69 @@ BRAND_IMAGES = {
 }
 
 DEFAULT_BRAND_IMAGE = "https://images.unsplash.com/photo-1493238792000-8113da705763?auto=format&fit=crop&w=1400&q=80"
+
+BRAND_MAPPING = {
+    "maruti suzuki": "maruti",
+    "maruti": "maruti",
+    "hyundai": "hyundai",
+    "honda": "honda",
+    "tata": "tata",
+    "mahindra": "mahindra",
+    "toyota": "toyota",
+    "ford": "ford",
+    "mercedes": "mercedes-benz",
+    "mercedes-benz": "mercedes-benz",
+    "bmw": "bmw",
+    "audi": "audi",
+}
+
+BRAND_FEATURES = [
+    "brand_audi",
+    "brand_bmw",
+    "brand_chevrolet",
+    "brand_daewoo",
+    "brand_datsun",
+    "brand_fiat",
+    "brand_force",
+    "brand_ford",
+    "brand_honda",
+    "brand_hyundai",
+    "brand_isuzu",
+    "brand_jaguar",
+    "brand_jeep",
+    "brand_kia",
+    "brand_land",
+    "brand_mahindra",
+    "brand_maruti",
+    "brand_mercedes-benz",
+    "brand_mg",
+    "brand_mitsubishi",
+    "brand_nissan",
+    "brand_opelcorsa",
+    "brand_renault",
+    "brand_skoda",
+    "brand_tata",
+    "brand_toyota",
+    "brand_volkswagen",
+    "brand_volvo",
+]
+
+MODEL_FEATURES = [
+    "Car_Age",
+    "kms_driven_log",
+    "fuel_Diesel",
+    "fuel_Electric",
+    "fuel_LPG",
+    "fuel_Petrol",
+    "seller_type_Individual",
+    "seller_type_Trustmark Dealer",
+    "transmission_Manual",
+    "owner_Fourth & Above Owner",
+    "owner_Second Owner",
+    "owner_Test Drive Car",
+    "owner_Third Owner",
+    *BRAND_FEATURES,
+]
 
 class PredictionPayload(BaseModel):
     brand: str = Field(..., example="Toyota")
@@ -94,25 +158,32 @@ async def predict(payload: PredictionPayload):
         owner_test_drive = 0
         owner_third = 0
 
-        features = np.array([
-            [
-                payload.kms_driven,
-                car_age,
-                fuel_diesel,
-                fuel_electric,
-                fuel_lpg,
-                fuel_petrol,
-                seller_individual,
-                seller_trustmark,
-                transmission_manual,
-                owner_fourth,
-                owner_second,
-                owner_test_drive,
-                owner_third,
-            ]
-        ], dtype=float)
+        brand_key = payload.brand.strip().lower()
+        normalized_brand = BRAND_MAPPING.get(brand_key, brand_key)
+        brand_flags = [
+            1.0 if normalized_brand == feature.replace("brand_", "") else 0.0
+            for feature in BRAND_FEATURES
+        ]
 
-        prediction = model.predict(features)[0]
+        raw_features = [
+            car_age,
+            np.log1p(payload.kms_driven),
+            *brand_flags,
+            fuel_diesel,
+            fuel_electric,
+            fuel_lpg,
+            fuel_petrol,
+            seller_individual,
+            seller_trustmark,
+            transmission_manual,
+            owner_fourth,
+            owner_second,
+            owner_test_drive,
+            owner_third,
+        ]
+
+        feature_df = pd.DataFrame([raw_features], columns=MODEL_FEATURES)
+        prediction = model.predict(feature_df)[0]
         predicted_price = round(float(prediction), 2)
 
         return {
