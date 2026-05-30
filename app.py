@@ -168,7 +168,6 @@ async def predict(payload: PredictionPayload):
         raw_features = [
             car_age,
             np.log1p(payload.kms_driven),
-            *brand_flags,
             fuel_diesel,
             fuel_electric,
             fuel_lpg,
@@ -180,6 +179,7 @@ async def predict(payload: PredictionPayload):
             owner_second,
             owner_test_drive,
             owner_third,
+            *brand_flags,
         ]
 
         feature_df = pd.DataFrame([raw_features], columns=MODEL_FEATURES)

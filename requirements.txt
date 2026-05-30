@@ -4,6 +4,7 @@ joblib==1.5.3
 numpy==2.4.6
 scikit-learn==1.8.0
 Jinja2==3.1.6
+aiofiles==23.2.1
 pydantic>=2.9.0,<3.0
 python-multipart==0.0.6
 requests==2.31.0
