@@ -27,10 +27,22 @@ app.add_middleware(
 templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
 app.mount("/static", StaticFiles(directory=str(BASE_DIR / "static")), name="static")
 
-try:
-    model = joblib.load(str(MODEL_PATH))
-except Exception as error:
-    raise RuntimeError(f"Could not load model file at {MODEL_PATH}: {error}")
+model = None
+
+
+def get_model():
+    global model
+    if model is None:
+        if not MODEL_PATH.exists():
+            raise RuntimeError(
+                f"Model file missing at {MODEL_PATH}. Make sure model/car_price_model.pkl is deployed."
+            )
+        try:
+            model = joblib.load(str(MODEL_PATH))
+        except Exception as error:
+            raise RuntimeError(f"Could not load model file at {MODEL_PATH}: {error}")
+    return model
+
 
 BRAND_IMAGES = {
     "Maruti Suzuki": "https://images.unsplash.com/photo-1471640122410-60a541b12d40?auto=format&fit=crop&w=1400&q=80",
@@ -183,7 +195,7 @@ async def predict(payload: PredictionPayload):
         ]
 
         feature_df = pd.DataFrame([raw_features], columns=MODEL_FEATURES)
-        prediction = model.predict(feature_df)[0]
+        prediction = get_model().predict(feature_df)[0]
         predicted_price = round(float(prediction), 2)
 
         return {
